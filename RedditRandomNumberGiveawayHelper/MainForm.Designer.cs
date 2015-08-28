@@ -30,12 +30,12 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.randomMax = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.randomMax)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -54,23 +54,23 @@
             this.textBox1.Size = new System.Drawing.Size(463, 20);
             this.textBox1.TabIndex = 1;
             // 
-            // numericUpDown1
+            // randomMax
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(118, 39);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
+            this.randomMax.Location = new System.Drawing.Point(118, 39);
+            this.randomMax.Maximum = new decimal(new int[] {
             100000,
             0,
             0,
             0});
-            this.numericUpDown1.Minimum = new decimal(new int[] {
+            this.randomMax.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(115, 20);
-            this.numericUpDown1.TabIndex = 2;
-            this.numericUpDown1.Value = new decimal(new int[] {
+            this.randomMax.Name = "randomMax";
+            this.randomMax.Size = new System.Drawing.Size(115, 20);
+            this.randomMax.TabIndex = 2;
+            this.randomMax.Value = new decimal(new int[] {
             5000,
             0,
             0,
@@ -113,7 +113,7 @@
             this.label3.TabIndex = 6;
             this.label3.Text = "Result";
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -122,12 +122,13 @@
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.numericUpDown1);
+            this.Controls.Add(this.randomMax);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
-            this.Name = "Form1";
-            this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Name = "MainForm";
+            this.Text = "Reddit random giveaway helper";
+            ((System.ComponentModel.ISupportInitialize)(this.randomMax)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -137,7 +138,7 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.NumericUpDown randomMax;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox textBox2;

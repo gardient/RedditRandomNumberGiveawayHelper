@@ -60,7 +60,7 @@ namespace RedditRandomNumberGiveawayHelper
                 textBox2.Text += string.Format("{1}{0}",
                     Environment.NewLine,
                     "Getting random number from random.org...");
-                WebRequest randomDotOrgRequest = WebRequest.Create(string.Format(RANDOM_ORG_URI, decimal.Round(numericUpDown1.Value, 0)));
+                WebRequest randomDotOrgRequest = WebRequest.Create(string.Format(RANDOM_ORG_URI, decimal.Round(randomMax.Value, 0)));
                 using (WebResponse resp = randomDotOrgRequest.GetResponse())
                 {
                     using (StreamReader sr = new StreamReader(resp.GetResponseStream()))
@@ -90,11 +90,12 @@ namespace RedditRandomNumberGiveawayHelper
             int? winningNumVal = null;
             int? diff = null;
 
-            for (int i = 0; (winningNumKey == null && winningNumVal == null) && randomNumber + i < decimal.Round(numericUpDown1.Value, 0); i++)
+            for (int i = 0; (winningNumKey == null && winningNumVal == null) && (randomNumber + i < decimal.Round(randomMax.Value, 0) || randomNumber - i > 0); i++)
             {
                 foreach (var x in nums)
                 {
-                    if (x.Value == randomNumber + i || x.Value == randomNumber - i)
+                    if ((x.Value == randomNumber + i && randomNumber + i < decimal.Round(randomMax.Value, 0))
+                        || (x.Value == randomNumber - i && randomNumber - i > 0))
                     {
                         winningNumKey = x.Key;
                         winningNumVal = x.Value;

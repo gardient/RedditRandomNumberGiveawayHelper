@@ -12,6 +12,7 @@ using RedditSharp.Things;
 using System.Net;
 using System.IO;
 using System.Text.RegularExpressions;
+using Octokit;
 
 namespace RedditRandomNumberGiveawayHelper
 {
@@ -118,6 +119,35 @@ namespace RedditRandomNumberGiveawayHelper
                 "Diff: ",
                 diff
                 );
+        }
+
+        private async void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var github = new GitHubClient(new ProductHeaderValue("RedditRandomNumberGiveawayHelper"));
+            var releases = await github.Release.GetAll("gardient", "RedditRandomNumberGiveawayHelper");
+            var newestRelease = releases.OrderByDescending(x => x.Id).FirstOrDefault();
+            var versionRegex = new Regex(@"^v(?<major>\d+)\.(?<minor>\d+)(\.(?<patch>\d+))?$", RegexOptions.IgnoreCase);
+            var tagMatch = versionRegex.Match(newestRelease.TagName);
+            if (tagMatch.Success)
+            {
+                var versionMatch = versionRegex.Match(Properties.Settings.Default.Version);
+                if (versionMatch.Success)
+                {
+                    if (int.Parse(versionMatch.Result("${major}")) >= int.Parse(tagMatch.Result("${major}"))
+                        && int.Parse(versionMatch.Result("${minor}")) >= int.Parse(tagMatch.Result("${minor}"))
+                        && int.Parse(versionMatch.Result("${patch}") == "" ? "0" : versionMatch.Result("${patch}")) >= int.Parse(tagMatch.Result("${patch}") == "" ? "0" : tagMatch.Result("${patch}")))
+                    {
+                        MessageBox.Show("You have the latest version");
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox.Show("There is a new verion available");
+                        System.Diagnostics.Process.Start(newestRelease.HtmlUrl);
+                        return;
+                    }
+                }
+            }
         }
     }
 }

@@ -19,17 +19,40 @@ namespace RedditRandomNumberGiveawayHelper
     public partial class MainForm : Form
     {
         //make sure to format with max number
-        private static string RANDOM_ORG_URI = "https://www.random.org/integers/?num=1&min=1&max={0}&col=1&base=10&format=plain&rnd=new";
+        private static string RANDOM_ORG_URI = "https://www.random.org/integers/?num=1&min={0}&max={1}&col=1&base=10&format=plain&rnd=new";
 
         public MainForm()
         {
             InitializeComponent();
         }
 
+        class DisplayTextbox
+        {
+            private TextBox txtBx;
+
+            public DisplayTextbox(TextBox x)
+            {
+                txtBx = x;
+            }
+
+            public void Write(params object[] strings)
+            {
+                txtBx.Text += string.Join(Environment.NewLine, strings) + Environment.NewLine;
+            }
+
+            public void Clear()
+            {
+                txtBx.Clear();
+            }
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
-            //textBox2.Text += string.Format("{0}", Environment.NewLine);
+            DisplayTextbox displayTextBox = new DisplayTextbox(textBox2);
+
+            displayTextBox.Clear();
             var reddit = new Reddit();
+
             Post giveawayPost = null;
             int? randomNumber = null;
 
@@ -37,31 +60,26 @@ namespace RedditRandomNumberGiveawayHelper
 
             try
             {
-                textBox2.Text += string.Format("Getting giveaway post...{0}", Environment.NewLine);
+                displayTextBox.Write("Getting giveaway post...");
                 giveawayPost = reddit.GetPost(new Uri(textBox1.Text));
             }
             catch (Exception ex)
             {
-                textBox2.Text += string.Format("{1}{0}{2}{0}",
-                    Environment.NewLine,
-                    "Failed getting giveaway post",
+                displayTextBox.Write("Failed getting giveaway post",
                     "You sure that's the right URI (alsomake sure to get the full uri from the address bar)");
                 return;
             }
 
-            textBox2.Text += string.Format("{1}{2}{0}{3}{4}{0}",
-                Environment.NewLine,
-                "Post title: ",
+            displayTextBox.Write("Post title: ",
                 giveawayPost.Title,
                 "Comment count: ",
                 giveawayPost.CommentCount);
 
             try
             {
-                textBox2.Text += string.Format("{1}{0}",
-                    Environment.NewLine,
-                    "Getting random number from random.org...");
-                WebRequest randomDotOrgRequest = WebRequest.Create(string.Format(RANDOM_ORG_URI, decimal.Round(randomMax.Value, 0)));
+                displayTextBox.Write("Getting random number from random.org...");
+
+                WebRequest randomDotOrgRequest = WebRequest.Create(string.Format(RANDOM_ORG_URI, decimal.Round(randomMin.Value, 0), decimal.Round(randomMax.Value, 0)));
                 using (WebResponse resp = randomDotOrgRequest.GetResponse())
                 {
                     using (StreamReader sr = new StreamReader(resp.GetResponseStream()))
@@ -72,16 +90,11 @@ namespace RedditRandomNumberGiveawayHelper
             }
             catch (Exception ex)
             {
-                textBox2.Text += string.Format("{1}{0}{2}{0}",
-                    Environment.NewLine,
-                    "Failed getting giveaway post",
-                    ex);
+                displayTextBox.Write("Failed getting giveaway post", ex);
                 return;
             }
 
-            textBox2.Text += string.Format("{1}{2}{0}{3}{4}{0}",
-                Environment.NewLine,
-                "Random Number: ",
+            displayTextBox.Write("Random Number: ",
                 randomNumber,
                 "Getting winning comment...",
                 "This might take a while...");
@@ -96,29 +109,38 @@ namespace RedditRandomNumberGiveawayHelper
                 foreach (var x in nums)
                 {
                     if ((x.Value == randomNumber + i && randomNumber + i < decimal.Round(randomMax.Value, 0))
-                        || (x.Value == randomNumber - i && randomNumber - i > 0))
+                        || (x.Value == randomNumber - i && randomNumber - i > decimal.Round(randomMin.Value, 0)))
                     {
                         winningNumKey = x.Key;
                         winningNumVal = x.Value;
                         diff = i;
                         break;
                     }
+
+                    //stop if we're out of range
+                    if (randomNumber + i > decimal.Round(randomMax.Value, 0) && randomNumber - i < decimal.Round(randomMin.Value, 0))
+                        break;
                 }
             }
 
-            Comment winningComment = giveawayPost.Comments.FirstOrDefault(w => w.Shortlink == winningNumKey);
+            if (!string.IsNullOrEmpty(winningNumKey) && winningNumVal.HasValue)
+            {
+                Comment winningComment = giveawayPost.Comments.FirstOrDefault(w => w.Shortlink == winningNumKey);
 
-            textBox2.Text += string.Format("{1}{2}{0}{3}{4}{0}{5}{6}{0}{7}{8}{0}",
-                Environment.NewLine,
-                "Winning comment (link): ",
-                winningNumKey,
-                "Winning comment (body): ",
-                winningComment.Body,
-                "Winning comment (commenter): ",
-                winningComment.Author,
-                "Diff: ",
-                diff
-                );
+                displayTextBox.Write("Winning comment (link): ",
+                    winningNumKey,
+                    "Winning comment (body): ",
+                    winningComment.Body,
+                    "Winning comment (commenter): ",
+                    winningComment.Author,
+                    "Diff: ",
+                    diff
+                    );
+            }
+            else
+            {
+                displayTextBox.Write("What the heck?? not one post in the range? you sure you have that range right?");
+            }
         }
 
         private async void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)

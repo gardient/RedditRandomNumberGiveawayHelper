@@ -24,7 +24,7 @@ press the button [Give Me A Random Winner] and the following will happen:
 ## Features to come
 
 - Change to new random.org API (yes this uses the old one)
-- Add minimum value to random number
+- ~~Add minimum value to random number~~(Done!)
 - Add better defined matching if number with which to enter the lottery
   - Number has to be right at the beginning of the comment
   - Dropdown with more options
